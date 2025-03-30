@@ -1,27 +1,23 @@
 pipeline {
-    agent any
-
-    environment {
-        PATH = "/opt/flutter/bin:${env.PATH}"
+    agent {
+        docker {
+            image 'cirrusci/flutter:stable'
+            args '-u root:root'  // important pour avoir les permissions
+        }
     }
 
     stages {
-        stage('Cloner le projet') {
-            steps {
-                git 'https://github.com/HoudaTaleb/CalmCup.git'
-            }
-        }
-        stage('Installer les dépendances') {
+        stage('Install dependencies') {
             steps {
                 sh 'flutter pub get'
             }
         }
-        stage('Analyse statique') {
+        stage('Analyze') {
             steps {
                 sh 'flutter analyze'
             }
         }
-        stage('Tests unitaires') {
+        stage('Test') {
             steps {
                 sh 'flutter test'
             }
@@ -31,9 +27,9 @@ pipeline {
                 sh 'flutter build apk'
             }
         }
-        stage('Archiver APK') {
+        stage('Archive APK') {
             steps {
-                archiveArtifacts artifacts: '**/app/build/**/*.apk', fingerprint: true
+                archiveArtifacts artifacts: '**/build/app/outputs/**/*.apk', fingerprint: true
             }
         }
     }
