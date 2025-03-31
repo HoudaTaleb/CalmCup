@@ -1,42 +1,34 @@
 pipeline {
-    agent any
+    agent any  // Exécuter sur n'importe quel agent disponible
 
     environment {
-        FLUTTER_IMAGE = 'cirrusci/flutter:stable'
+        DOCKER_IMAGE = 'jenkins/jenkins:latest'  // Change ceci avec ton image
+        DOCKER_CREDENTIALS = 'docker-hub-credentials-id'
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/HoudaTaleb/CalmCup'
+                git 'https://github.com/HoudaTaleb/CalmCup'  // Change l'URL avec ton dépôt
             }
         }
 
-        stage('Install Flutter Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh "docker run --rm -v \$(pwd):/app -w /app ${FLUTTER_IMAGE} flutter pub get"
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
             }
         }
 
-        stage('Analyze') {
+        stage('Push Docker Image') {
             steps {
-                sh "docker run --rm -v \$(pwd):/app -w /app ${FLUTTER_IMAGE} flutter analyze || true"
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS) {
+                        docker.image(DOCKER_IMAGE).push()
+                    }
+                }
             }
-        }
-
-        stage('Build APK') {
-            steps {
-                sh "docker run --rm -v \$(pwd):/app -w /app ${FLUTTER_IMAGE} flutter build apk --release"
-            }
-        }
-    }
-
-    post {
-        failure {
-            echo "❌ Build failed."
-        }
-        success {
-            echo "✅ Build succeeded."
         }
     }
 }
