@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'cirrusci/flutter:stable'
+            image 'ghcr.io/cirruslabs/flutter:stable'
             args '-u root:root'
         }
     }
