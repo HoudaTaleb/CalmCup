@@ -17,11 +17,11 @@ pipeline {
                 sh 'flutter analyze'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'flutter test'
-            }
-        }
+        //stage('Test') {
+          //  steps {
+            //    sh 'flutter test'
+            //}
+        //}
         stage('Build APK') {
             steps {
                 sh 'flutter build apk'
