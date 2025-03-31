@@ -14,7 +14,7 @@ pipeline {
 
         stage('Install Flutter Dependencies') {
             steps {
-                sh "docker run --rm -v \$(pwd):/app -w /app ${FLUTTER_IMAGE} flutter pub get"
+                sh "flutter pub get"
             }
         }
 
