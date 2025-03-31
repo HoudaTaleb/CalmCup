@@ -1,32 +1,10 @@
 pipeline {
-    agent {
-        docker {
-            image 'cirrusci/flutter:stable'
-        }
-    }
+    agent any
 
     stages {
-        stage('Install dependencies') {
+        stage('Test') {
             steps {
-                sh 'flutter pub get'
-            }
-        }
-
-        stage('Analyze') {
-            steps {
-                sh 'flutter analyze || true'
-            }
-        }
-
-        stage('Build APK') {
-            steps {
-                sh 'flutter build apk --release'
-            }
-        }
-
-        stage('Archive APK') {
-            steps {
-                archiveArtifacts artifacts: '**/build/app/outputs/flutter-apk/app-release.apk', fingerprint: true
+                echo "✅ Jenkins is correctly connected to the Git repo!"
             }
         }
     }
