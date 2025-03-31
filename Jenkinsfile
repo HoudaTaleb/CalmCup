@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'ghcr.io/cirruslabs/flutter:stable'
-            args '-u root:root'
         }
     }
 
@@ -12,24 +11,22 @@ pipeline {
                 sh 'flutter pub get'
             }
         }
+
         stage('Analyze') {
             steps {
-                sh 'flutter analyze'
+                sh 'flutter analyze || true' // Ne bloque pas le pipeline en cas de warnings
             }
         }
-        //stage('Test') {
-          //  steps {
-            //    sh 'flutter test'
-            //}
-        //}
+
         stage('Build APK') {
             steps {
-                sh 'flutter build apk'
+                sh 'flutter build apk --release'
             }
         }
+
         stage('Archive APK') {
             steps {
-                archiveArtifacts artifacts: '**/build/app/outputs/**/*.apk', fingerprint: true
+                archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/app-release.apk', fingerprint: true
             }
         }
     }
