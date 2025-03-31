@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'cirrusci/flutter:stable'
-            args '-u root:root'  // important pour avoir les permissions
+            args '-u root:root'
         }
     }
 
