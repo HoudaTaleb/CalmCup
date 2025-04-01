@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coffee-calm-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coffee-calm
+  template:
+    metadata:
+      labels:
+        app: coffee-calm
+    spec:
+      containers:
+        - name: coffee-calm-container
+          image: coffee-calm-web:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
