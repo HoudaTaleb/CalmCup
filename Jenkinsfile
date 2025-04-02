@@ -33,17 +33,12 @@ pipeline {
         sh "docker build -t $PROJECT_NAME ."
       }
     }
-    stage('Stop Old Container') {
-                steps {
-                    sh """
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                    """
-                }
-            }
+
 
     stage('Run Docker Container') {
                 steps {
+                    sh "docker stop $CONTAINER_NAME || true"
+                    sh "docker rm $CONTAINER_NAME || true"
                     sh "docker run -d --name $CONTAINER_NAME -p ${HOST_PORT}:80 $PROJECT_NAME"
                 }
             }
