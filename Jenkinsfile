@@ -13,12 +13,26 @@ pipeline {
         git branch: 'main', url: 'https://github.com/HoudaTaleb/CalmCup'
       }
     }
+    stage('Test Docker Access') {
+      steps {
+        echo '🔍 Vérification de l\'accès à Docker...'
+        sh 'docker --version'
+      }
+    }
+
 
     stage('Flutter Web Build') {
       steps {
-        sh 'flutter build web'
+        sh """
+          docker run --rm \
+            -v "\$PWD":/app \
+            -w /app \
+            cirrusci/flutter:stable \
+            flutter build web
+        """
       }
     }
+
 
     stage('Build Docker Image') {
       steps {
