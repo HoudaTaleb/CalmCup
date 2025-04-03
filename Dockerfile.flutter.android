@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-# Install de base
+# Installer les dépendances de base
 RUN apt-get update && apt-get install -y \
     curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget sudo
 
@@ -8,14 +8,19 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/flutter/flutter.git /flutter -b stable
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Installer Android SDK
+# Installer Android SDK (command line tools)
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
   && cd ${ANDROID_SDK_ROOT}/cmdline-tools \
   && curl -O https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip \
-  && unzip commandlinetools-linux-*.zip -d latest \
+  && unzip commandlinetools-linux-*.zip -d tmp \
+  && mv tmp ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
   && rm commandlinetools-linux-*.zip
+
+# Ajouter sdkmanager au PATH
 ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${PATH}"
+
+# Accepter les licences et installer les composants nécessaires
 RUN yes | sdkmanager --licenses \
   && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
@@ -23,7 +28,7 @@ RUN yes | sdkmanager --licenses \
 RUN git clone https://github.com/HoudaTaleb/CalmCup.git /app
 WORKDIR /app
 
-# Build
+# Build APK
 RUN flutter doctor -v
 RUN flutter pub get
 RUN flutter build apk
