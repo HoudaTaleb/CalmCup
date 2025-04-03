@@ -3,13 +3,15 @@
 FROM dart:stable AS dart-env
 
 # Installer Flutter manuellement
-RUN git clone https://github.com/HoudaTaleb/CalmCup.git /flutter -b stable
+RUN git clone https://github.com/flutter/flutter.git /flutter -b stable
+RUN git clone https://github.com/HoudaTaleb/CalmCup.git /app
+WORKDIR /app
+
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 RUN flutter doctor
 
-WORKDIR /app
-COPY . .
+
 
 RUN flutter pub get
 RUN flutter build apk
