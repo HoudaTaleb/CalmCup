@@ -1,35 +1,38 @@
+# Dockerfile.flutter.android
+
 FROM ubuntu:22.04
 
-# Installer les dépendances de base
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
     curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget sudo
 
-# Installer Flutter SDK
+# Installer Flutter
 RUN git clone https://github.com/flutter/flutter.git /flutter -b stable
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Installer Android SDK (structure correcte)
+# Installer Android SDK (structure officielle)
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
-RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
-  && cd ${ANDROID_SDK_ROOT}/cmdline-tools \
-  && curl -O https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip \
-  && unzip commandlinetools-linux-*.zip -d tools \
-  && mv tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
-  && rm commandlinetools-linux-*.zip
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
+    curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip && \
+    unzip sdk-tools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools && \
+    mv ${ANDROID_SDK_ROOT}/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/tools
 
-# Ajouter le bon PATH vers sdkmanager
-ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/tools/bin:${PATH}"
+# Ajouter sdkmanager au PATH
+ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 
+# Accepter les licences
+RUN yes | sdkmanager --licenses
 
-# Accepter les licences et installer les composants nécessaires
-RUN yes | sdkmanager --licenses \
-  && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+# Installer les composants nécessaires
+RUN sdkmanager \
+  "platform-tools" \
+  "platforms;android-34" \
+  "build-tools;34.0.0"
 
-# Cloner ton projet Flutter depuis GitHub
-RUN git clone https://github.com/HoudaTaleb/CalmCup /app
+# Préparer le projet
 WORKDIR /app
+COPY . .
 
-# Build APK
-RUN flutter doctor -v
+RUN flutter clean
 RUN flutter pub get
 RUN flutter build apk
