@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  flutter-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.flutter
+    volumes:
+      - ./build_output:/app/build/app/outputs/flutter-apk

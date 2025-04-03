@@ -1,0 +1,7 @@
+services:
+  flutter-android-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.flutter.android
+    volumes:
+      - ./build_output:/app/build/app/outputs/flutter-apk
