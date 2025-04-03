@@ -8,17 +8,18 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/flutter/flutter.git /flutter -b stable
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Installer Android SDK (command line tools)
+# Installer Android SDK (structure correcte)
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
   && cd ${ANDROID_SDK_ROOT}/cmdline-tools \
   && curl -O https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip \
-  && unzip commandlinetools-linux-*.zip -d tmp \
-  && mv tmp ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
+  && unzip commandlinetools-linux-*.zip -d tools \
+  && mv tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
   && rm commandlinetools-linux-*.zip
 
-# Ajouter sdkmanager au PATH
-ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${PATH}"
+# Ajouter le bon PATH vers sdkmanager
+ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/tools/bin:${PATH}"
+
 
 # Accepter les licences et installer les composants nécessaires
 RUN yes | sdkmanager --licenses \
