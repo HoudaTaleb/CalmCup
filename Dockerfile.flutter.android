@@ -26,7 +26,7 @@ RUN yes | sdkmanager --licenses \
   && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
 # Cloner ton projet Flutter depuis GitHub
-RUN git clone https://github.com/HoudaTaleb/CalmCup.git /app
+RUN git clone https://github.com/HoudaTaleb/CalmCup /app
 WORKDIR /app
 
 # Build APK
