@@ -1,10 +1,10 @@
 FROM ubuntu:22.04
 
-# Installer dépendances de base
+# Install de base
 RUN apt-get update && apt-get install -y \
     curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget sudo
 
-# Installer Flutter
+# Installer Flutter SDK
 RUN git clone https://github.com/flutter/flutter.git /flutter -b stable
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
@@ -15,17 +15,15 @@ RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
   && curl -O https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip \
   && unzip commandlinetools-linux-*.zip -d latest \
   && rm commandlinetools-linux-*.zip
-
 ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${PATH}"
 RUN yes | sdkmanager --licenses \
   && sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-# Préparer le projet
+# Cloner ton projet Flutter depuis GitHub
+RUN git clone https://github.com/HoudaTaleb/CalmCup.git /app
 WORKDIR /app
-COPY . .
 
+# Build
 RUN flutter doctor -v
 RUN flutter pub get
-
-# Build APK
 RUN flutter build apk
